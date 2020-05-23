@@ -9,15 +9,19 @@ public final class Response: CustomDebugStringConvertible, Equatable {
     /// The response data.
     public let data: Data
 
+    /// The response object.
+    public let responseObject: T?
+
     /// The original URLRequest for the response.
     public let request: URLRequest?
 
     /// The HTTPURLResponse object.
     public let response: HTTPURLResponse?
 
-    public init(statusCode: Int, data: Data, request: URLRequest? = nil, response: HTTPURLResponse? = nil) {
+    public init<T: Decodable>(statusCode: Int, data: Data, responseObject: T.Type? = nil, request: URLRequest? = nil, response: HTTPURLResponse? = nil) {
         self.statusCode = statusCode
         self.data = data
+        self.responseObject = self.map(responseObject.self)
         self.request = request
         self.response = response
     }
@@ -185,8 +189,4 @@ public extension Response {
             throw MoyaError.objectMapping(error, self)
         }
     }
-}
-
-private struct DecodableWrapper<T: Decodable>: Decodable {
-    let value: T
 }
